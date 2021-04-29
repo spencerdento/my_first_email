@@ -1,10 +1,10 @@
-use lettre::Transport;
-
+use lettre::{SmtpTransport, Transport};
+use lettre::smtp::error::Error;
 
 extern crate lettre;
 extern crate lettre_email;
 
-pub fn _send_email(to: &str, name: &str) {
+pub fn _send_email(to: &str, name: &str, domain: &str, username: &str, password: &str) {
     let email = lettre_email::EmailBuilder::new()
       .to((to, name))
       .from(("micromessager@gmail.com", "Test Email"))
@@ -13,12 +13,16 @@ pub fn _send_email(to: &str, name: &str) {
       .build()
       .unwrap();
 
-    let mut mailer = lettre::SmtpClient::new_simple("smtp.gmail.com")
-      .unwrap()
-      .credentials(lettre::smtp::authentication::Credentials::new("micromessager@gmail.com".into(), "MicroMessagerT3st".into()))
-      .transport();
+    let mut mailer = _make_smtp_transport(domain, username, password).expect("Couldn't verify SMTP");
     
     let result = mailer.send(email.into());
 
     println!("{:?}", result);
+}
+
+fn _make_smtp_transport(domain: &str, username: &str, password: &str) -> Result<SmtpTransport, Error> {
+    let mailer = lettre::SmtpClient::new_simple(domain)?;
+    let mailer = mailer.credentials(lettre::smtp::authentication::Credentials::new(username.into(), password.into())).transport();
+
+    Ok(mailer)
 }

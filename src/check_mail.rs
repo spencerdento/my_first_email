@@ -15,7 +15,7 @@ pub fn email_login(domain: &str, username: &str, password: &str) -> Session<TlsS
     my_session
 }
 
-pub fn get_latest_email (my_session: &mut Session<TlsStream<TcpStream>>) {
+pub fn get_latest_email(my_session: &mut Session<TlsStream<TcpStream>>) {
 
     //select my inbox and get the number of messages
     let inbox_len = my_session.select("INBOX").expect("Couldn't find my INBOX").exists;
