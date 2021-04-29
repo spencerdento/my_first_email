@@ -4,7 +4,7 @@ use std::{fs, net::TcpStream};
 use imap::Session;
 use native_tls::{TlsConnector, TlsStream};
 
-pub fn _email_login(domain: &str, username: &str, password: &str) -> Session<TlsStream<TcpStream>> {
+pub fn email_login(domain: &str, username: &str, password: &str) -> Session<TlsStream<TcpStream>> {
     let tls = TlsConnector::builder().build().expect("Couldn't make TLS Connector");
     //make a new client at the address of the domain and port, double check with domain, and give it a TLS connector
     let client = imap::connect((domain, 993), domain, &tls).expect("Couldn't make Client");
@@ -15,7 +15,7 @@ pub fn _email_login(domain: &str, username: &str, password: &str) -> Session<Tls
     my_session
 }
 
-pub fn _get_latest_email(my_session: &mut Session<TlsStream<TcpStream>>) {
+pub fn get_latest_email(my_session: &mut Session<TlsStream<TcpStream>>) {
 
     //select my inbox and get the number of messages
     let inbox_len = my_session.select("INBOX").expect("Couldn't find my INBOX").exists;

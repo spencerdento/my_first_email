@@ -4,7 +4,7 @@ use lettre::smtp::error::Error;
 extern crate lettre;
 extern crate lettre_email;
 
-pub fn _send_email(to: &str, name: &str, domain: &str, username: &str, password: &str) -> Result<Response, Error> {
+pub fn send_email(to: &str, name: &str, domain: &str, username: &str, password: &str) -> Result<Response, Error> {
     let email = lettre_email::EmailBuilder::new()
       .to((to, name))
       .from(("micromessager@gmail.com", "Test Email"))
