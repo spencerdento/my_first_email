@@ -1,18 +1,18 @@
-extern crate imap;
-
 use std::{fs, net::TcpStream};
+use anyhow::Error;
 use imap::Session;
 use native_tls::{TlsConnector, TlsStream};
 
-pub fn email_login(domain: &str, username: &str, password: &str) -> Session<TlsStream<TcpStream>> {
-    let tls = TlsConnector::builder().build().expect("Couldn't make TLS Connector");
+pub fn email_login(domain: &str, username: &str, password: &str) -> anyhow::Result<Session<TlsStream<TcpStream>>> {
+    let tls = TlsConnector::builder().build()?;
     //make a new client at the address of the domain and port, double check with domain, and give it a TLS connector
-    let client = imap::connect((domain, 993), domain, &tls).expect("Couldn't make Client");
+    let client = imap::connect((domain, 993), domain, &tls)?;
     
-    //now i have log in
-    let my_session = client.login(username, password).expect("Couldn't Sign in");
-    
-    my_session
+    //now i start my session
+    match client.login(username, password) {
+        Ok(x) => Ok(x),
+        Err(a) => Err(Error::new(a.0))
+    }
 }
 
 pub fn get_latest_email(my_session: &mut Session<TlsStream<TcpStream>>) {

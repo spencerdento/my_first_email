@@ -1,17 +1,12 @@
 use lettre::{SmtpTransport, Transport, smtp::response::Response};
-use lettre::smtp::error::Error;
 
-extern crate lettre;
-extern crate lettre_email;
-
-pub fn send_email(to: &str, name: &str, domain: &str, username: &str, password: &str) -> Result<Response, Error> {
+pub fn send_email(to: &str, name: &str, domain: &str, username: &str, password: &str) -> anyhow::Result<Response> {
     let email = lettre_email::EmailBuilder::new()
       .to((to, name))
       .from(("micromessager@gmail.com", "Test Email"))
       .subject("Sent from my uMessage-r")
-      .text("Hi, what're you up to today?")
-      .build()
-      .unwrap();
+      .text("Yoooo, whats popping?!?!")
+      .build()?;
 
     let mut mailer = make_smtp_transport(domain, username, password)?;
     
@@ -19,7 +14,7 @@ pub fn send_email(to: &str, name: &str, domain: &str, username: &str, password: 
     Ok(result)
 }
 
-fn make_smtp_transport(domain: &str, username: &str, password: &str) -> Result<SmtpTransport, Error> {
+fn make_smtp_transport(domain: &str, username: &str, password: &str) -> anyhow::Result<SmtpTransport> {
     let mailer = lettre::SmtpClient::new_simple(domain)?;
     let mailer = mailer.credentials(lettre::smtp::authentication::Credentials::new(username.into(), password.into())).transport();
 
