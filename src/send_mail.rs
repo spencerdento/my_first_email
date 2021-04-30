@@ -5,7 +5,7 @@ pub fn send_email(to: &str, name: &str, domain: &str, username: &str, password: 
       .to((to, name))
       .from(("micromessager@gmail.com", "Test Email"))
       .subject("Sent from my uMessage-r")
-      .text("Yoooo, whats popping?!?!")
+      .text("What did you do today?")
       .build()?;
 
     let mut mailer = make_smtp_transport(domain, username, password)?;

@@ -11,22 +11,27 @@ pub fn email_login(domain: &str, username: &str, password: &str) -> anyhow::Resu
     //now i start my session
     match client.login(username, password) {
         Ok(x) => Ok(x),
-        Err(a) => Err(Error::new(a.0))
+        Err((e, _)) => Err(Error::new(e))
     }
 }
 
-pub fn get_latest_email(my_session: &mut Session<TlsStream<TcpStream>>) {
+pub fn get_latest_email(my_session: &mut Session<TlsStream<TcpStream>>) -> anyhow::Result<&str> {
 
     //select my inbox and get the number of messages
-    let inbox_len = my_session.select("INBOX").expect("Couldn't find my INBOX").exists;
+    let inbox_len = my_session.select("INBOX")?.exists;
 
-    let my_fetch = my_session.fetch(inbox_len.to_string(), "RFC822").expect("Couldn't Find Messages");
+    let my_fetch = my_session.fetch(inbox_len.to_string(), "RFC822")?;
 
     for mail in my_fetch.iter() {
-        if let Some(body) = mail.body() {
-            fs::write("email.txt", body).expect("File Error");
-        } else {
-            println!("Message was unreadable");
-        }
+        match mail.body() {
+            Some(body) => {
+                fs::write("email.txt", body)?;
+            },
+            None => {
+                    return Err(Error::msg("Message was unreadable."));
+                }
+        };
     }
+
+    Ok("email.txt")
 }
